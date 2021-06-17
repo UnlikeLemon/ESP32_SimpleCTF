@@ -1,12 +1,17 @@
 import network
-from machine import *
-import random, time
+import random
 import usocket as socket
+
+#Importing all the libraries that are needed
 
 s = socket.socket()
 ap = network.WLAN(network.AP_IF)
-bars = "-" * 31
+#Initializing the AP(Access Point) and the socket
+
+bars = "-" * 31 #Bars, mostly for better appearance
 congratulations_msg = bars + "\nCongratulations but my website is the most secure thing that you probably across,\n so highly unlikely that you will get past my ultimate secure login page :)\n"
+#Congratulations message, a part of the web challenge
+#----Not developed yet----
 
 def html():
     website = """<html>
@@ -17,6 +22,8 @@ def html():
     </html>"""
     return website
 
+#Function that returns a really simple website
+
 def forbiden_site():
     html = """<html>
     <title> A different website ;)</title>
@@ -24,6 +31,7 @@ def forbiden_site():
     <p>It is not allowed!</p>
     </html>"""
     return html
+#Same function as above, different cause its part of the challenge
 
 def create_pass():
     password = ""
@@ -34,16 +42,19 @@ def create_pass():
     print("\n{ + } Password Generated! { + }")
     print(bars)
     return password
+#Function that creates and returns the password
 
+#Function that thakes a name/password parameter and uses them to create an AP with these credentials
 def create_AP(name, passwd):
     ap.active(1)
-    ap.config(essid=name, password=passwd)
+    ap.config(essid=name, password=passwd, authmode=2)
     print("\n{ + } Network Created! { + }")
     print(bars)
 
+#Socket function, acts as a listener when a request is made at port 80 and returns the website, along with printing the response for troubleshooting
 def sockets():
-    ip = ap.ifconfig()[0]
-    s.bind((ip, 80))
+    ip = ap.ifconfig()[0]#ap.ifconfig returns a list of stats from the current network so that we don't have to guess and change the IP everytime
+    s.bind((ip, 80))#Bind to the IP and listen to port 80
     s.listen(5)
     while True:
         c, addr = s.accept()
@@ -53,9 +64,9 @@ def sockets():
         c.send(resp)
         c.close()
 
-def start():
-    password = create_pass()
-    passwd = str(password)
+#Main function that starts everything
+def main():
+    password = str(create_pass())
     create_AP("Try to crack me ;)", str(123456789)) #<-- Change the password after debugging
     print("\n{ + } Let the Cracking Begin! { + }")
     print(bars)
@@ -64,10 +75,11 @@ def start():
     digits = hint[0]
     ip = hint[2]
     print("Hints: \nFirst 4 Digits: " + str(digits) + "\nLength: " + str(pass_len))
-    print("Password: " + passwd)
+    print("Password: " + password)
     print("IP: " + ip)
     sockets()
 
+#Hints function, takes the password and returns the first 4 digits, the rest are turned into asterisks
 def hints(passwd):
     x = passwd
     length = len(x)
@@ -75,12 +87,11 @@ def hints(passwd):
     asterisks = (length - length_y) * "*"
     y = ""
     for i in range(0, 4):
-        y = y + x[i]
+        y += x[i]
     ip = ap.ifconfig()[0]
-
     return y + asterisks, length, ip
 
 
-start()
+main()
 
 

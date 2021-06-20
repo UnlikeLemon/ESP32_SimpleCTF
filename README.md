@@ -15,7 +15,9 @@ ampy
 screen
 
 ~>sudo apt-get install screen
+
 ~>sudo pip install adafruit-ampy
+
 ~>sudo pip3 install esptool
 
 

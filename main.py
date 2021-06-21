@@ -37,8 +37,9 @@ def forbiden_site():
     <title> A different website ;)</title>
     <p>It seems that you are using a forbidden User-Agent</p>
     <p>It is not allowed!</p>
+    <p>{bars}
     Testing parameters and sh..
-    </html>"""
+    </html>""".format(bars=bars)
     return html
 #Same function as above, different cause its part of the challenge
 
@@ -60,6 +61,15 @@ def create_AP(name, passwd):
     print("\n{ + } Network Created! { + }")
     print(bars)
 
+#Function that checks the user agent of a request
+def check_agent(request):
+    request = str(request)
+    for i in forbidden_user_agents:
+        if i in request:
+            return 1
+        else:
+            return 0
+
 #Socket function, acts as a listener when a request is made at port 80 and returns the website, along with printing the response for troubleshooting
 def sockets():
     ip = ap.ifconfig()[0]#ap.ifconfig returns a list of stats from the current network so that we don't have to guess and change the IP everytime
@@ -69,10 +79,16 @@ def sockets():
         c, addr = s.accept()
         print("Got a connection from: {addr}".format(addr=str(addr)))
         req = c.recv(1024)
-        print(str(req))
-        resp = html()
-        c.send(resp)
-        c.close()
+        req = str(req)
+        check = check_agent(req)
+        if check == 1:
+            resp = str(forbiden_site())
+            c.send(resp)
+            c.close()
+        else:
+            resp = str(html())
+            c.send(resp)
+            c.close()
 
 #Main function that starts everything
 def main():

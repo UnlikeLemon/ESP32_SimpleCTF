@@ -11,14 +11,17 @@ ap = network.WLAN(network.AP_IF)
 bars = "-" * 31 #Bars, mostly for better appearance
 congratulations_msg = bars + "\nCongratulations but my website is the most secure thing that you probably across,\n so highly unlikely that you will get past my ultimate secure login page :)\n"
 #Congratulations message, a part of the web challenge
-#----Not developed yet----
+#<----Not developed yet---->
 
 def html():
     website = """<html>
     <title>Testing 123</title>
     <p>This is a test</p>
     <p>Parameter test</p>
-    <b>"""+bars+"""</b>
+    <p>{bars}</p>
+    <h1>Second parameter</h1>
+    <p>{congratulations_msg}</p>
+    <b></b>
     </html>"""
     return website
 
@@ -29,6 +32,7 @@ def forbiden_site():
     <title> A different website ;)</title>
     <p>It seems that you are using a forbidden User-Agent</p>
     <p>It is not allowed!</p>
+    Testing parameters and sh..
     </html>"""
     return html
 #Same function as above, different cause its part of the challenge
@@ -36,9 +40,9 @@ def forbiden_site():
 def create_pass():
     password = ""
     nums = 9
-    for i in range(3):
-        x = random.getrandbits(nums)
-        password = password + str(x)
+    for i in range(3):#Get 3 digits from x, and append them to password
+        x = random.getrandbits(nums)#.getrandbits is used cause the random module doesn't have .randint(), or .choice()
+        password += str(x)
     print("\n{ + } Password Generated! { + }")
     print(bars)
     return password
@@ -47,7 +51,7 @@ def create_pass():
 #Function that thakes a name/password parameter and uses them to create an AP with these credentials
 def create_AP(name, passwd):
     ap.active(1)
-    ap.config(essid=name, password=passwd, authmode=2)
+    ap.config(essid=name, password=passwd, authmode=3)#essid is the name, password is the password, and authmode is the security Protocol that's used for the AP, 2 is WPA
     print("\n{ + } Network Created! { + }")
     print(bars)
 
@@ -67,7 +71,7 @@ def sockets():
 #Main function that starts everything
 def main():
     password = str(create_pass())
-    create_AP("Try to crack me ;)", str(123456789)) #<-- Change the password after debugging
+    create_AP("Try to crack me ;)", str(123456789)) #<-- Change the password after debugging to password
     print("\n{ + } Let the Cracking Begin! { + }")
     print(bars)
     hint = hints(password)
@@ -75,8 +79,8 @@ def main():
     digits = hint[0]
     ip = hint[2]
     print("Hints: \nFirst 4 Digits: " + str(digits) + "\nLength: " + str(pass_len))
-    print("Password: " + password)
-    print("IP: " + ip)
+    print("Password: "+ password)
+    print("IP: "+ip)
     sockets()
 
 #Hints function, takes the password and returns the first 4 digits, the rest are turned into asterisks

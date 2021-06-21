@@ -11,6 +11,11 @@ ap = network.WLAN(network.AP_IF)
 bars = "-" * 31 #Bars, mostly for better appearance
 congratulations_msg = bars + "\nCongratulations but my website is the most secure thing that you probably across,\n so highly unlikely that you will get past my ultimate secure login page :)\n"
 #Congratulations message, a part of the web challenge
+
+forbidden_user_agents = ["Firefox", "Curl", "firefox", "curl","Redmi", "redmi"]
+
+
+
 #<----Not developed yet---->
 
 def html():
@@ -22,7 +27,7 @@ def html():
     <h1>Second parameter</h1>
     <p>{congratulations_msg}</p>
     <b></b>
-    </html>"""
+    </html>""".format(bars=bars, congratulations_msg=congratulations_msg)
     return website
 
 #Function that returns a really simple website
@@ -62,8 +67,9 @@ def sockets():
     s.listen(5)
     while True:
         c, addr = s.accept()
-        print("Got a connection from: " + str(addr))
+        print("Got a connection from: {addr}".format(addr=str(addr)))
         req = c.recv(1024)
+        print(str(req))
         resp = html()
         c.send(resp)
         c.close()
@@ -78,9 +84,9 @@ def main():
     pass_len = hint[1]
     digits = hint[0]
     ip = hint[2]
-    print("Hints: \nFirst 4 Digits: " + str(digits) + "\nLength: " + str(pass_len))
-    print("Password: "+ password)
-    print("IP: "+ip)
+    print("Hints: \nFirst 4 Digits: {digits}\nLength: {length}".format(digits=digits,length=pass_len))
+    print("Password: {password}".format(password=password))
+    print("IP: {ip}".format(ip=ip))
     sockets()
 
 #Hints function, takes the password and returns the first 4 digits, the rest are turned into asterisks

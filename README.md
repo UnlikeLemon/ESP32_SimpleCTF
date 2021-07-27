@@ -1,57 +1,81 @@
-This simple CTF is a little project im working on.
-Its nothing special and it started because i wan't to
-sharpen my networking skills and so i decided to turn it
-into a fun and quick challenge.
+# What this is.
+
+This repository is a simple project i've been working on. I personally use it to sharpen my network skills along with challenging myself with coding. Thought to share this cause it might seem helpfull to some.
+
+# How do i setup it?
+---
+
+## Manual Setup
+
+So, for starters we need to download the list of tools that will be needed so we can work.
+
+Tool list:
+- [ ] adafruit-ampy
+- [ ] esptool.py
+- [ ] screen
+
+## How do we install them?
+
+**adafruit-ampy**
+
+>pip3 install adafruit-ampy
+
+**esptool.py**
+>pip3 install esptool
+
+**screen**
+>sudo apt-get install screen
 
 
-All the tools will be listed in this README.md
-along with a tutorial on how to make it work:
+After all our tools are ready, we need to flash our ESP.
+
+---
+
+## Flashing and uploading firmware.
+
+>esptool.py --port [PORT] --baud [BAUD] erase_flash
+
+I set the port to `/dev/ttyUSB0` and baud at `115200` but it's mostly depending on your machine.
+
+Next, we need to upload the firmware to the ESP.
+
+>esptool.py --port [PORT] --baud [BAUD] write_flash --flash_size=detect 0 firmware.bin
+
+After we've finished with that, we use screen to see if we did things correctly.
+
+>sudo screen [PORT] [BAUD]
+
+Note: If all you see is a black screen, try pressing the RST button on your ESP.
+
+---
+
+## Ampy
+
+Now we need a way to upload/remove files to the ESP, and we do that with ampy.
+
+>sudo ampy --port [PORT] --baud [BAUD] put main.py
 
 
-#Installization
+What this will do is put `main.py` from our machine to the ESP
 
-esptool.py
-ampy
-screen
+We can also do
 
-~>sudo apt-get install screen
+>sudo ampy --port [PORT] --baud [BAUD] ls
 
-~>sudo pip install adafruit-ampy
+to list all the files in the ESP and
 
-~>sudo pip3 install esptool
+>sudo ampy --port [PORT] --baud [BAUD] rm file.py
 
+to remove something.
 
-Screen will be used to get an interface from the ESP
-Ampy is going to be used to upload the main.py file in the ESP
-esptool will be used to upload the firmware to the ESP and allow it to run micropython
+---
 
+## How the challenge works and how to solve it.
+When you plug-in the ESP and it's powered, it will start by generating a password and an AP (Access Point) with that random password. The password is only digits to make it easier with cracking. I also made it print the first four digits of the password along with its length and its IP to make it a bit easier. The password is also printed and i'll explain why later. Once you crack the password and manage to enter the network you need to find the web page that is running in a random port. I haven't finished it yet so the challenge stops there.
 
-#Uploading firmware
+### Cracking the password.
 
-~>sudo esptool.py --port [PORT] --baud [BAUD] erase_flash
+How i do it is simply open `airodump-ng` and connect to the AP with my phone so i can grab the handshake. Once i get it i go to `aircrack-ng`, make a custom wordlist with the 4 digits that have been given to me and wait for the password to crack.
 
-e.g
-~>sudo esptool.py --port /dev/ttyUSB0 --baud 115200 erase_flash
-
-and after that:
-
-~>sudo esptool.py --port /dev/ttyUSB0 --baud 115200 write_flash --flash_size=detect 0 firmware.bin
-
-#Uploading the main.py
-
-~>sudo ampy --port [PORT] --baud [BAUD] put main.py
-
-~>sudo ampy --port /dev/ttyUSB0 --baud 115200 put main.py
-
-And that's it!
-
-[[All thats left is to get an interface with:]]
-
-~>sudo screen [PORT] [BAUD]
-
-~>sudo screen /dev/ttyUSB0 115200
-
-Note: In case that you see gibberish in your screen or nothing, restart the ESP from its reset button and 
-it should be working
-
+### The web part of the challenge is not finished yet.
 

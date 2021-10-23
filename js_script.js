@@ -2,7 +2,7 @@ const xhrr = new XMLHttpRequest();
 xhrr.open("GET", "http://127.0.0.1:1337/tickets",true);
 
 xhrr.send();
-const v = xhrr.response;
+let v = xhrr.response;
 
 
 

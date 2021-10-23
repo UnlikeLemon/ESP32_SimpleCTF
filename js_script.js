@@ -1,5 +1,5 @@
 var xhr = new XMLHttpRequest();
-xhr.open("GET", "http://127.0.0.1:1337/tickets",true);
+xhr.open("GET", "https://raw.githubusercontent.com/UnlikeLemon/ESP32_SimpleCTF/master/js_script.js",true);
 xhr.send();
 v = xhr.responseText;
 

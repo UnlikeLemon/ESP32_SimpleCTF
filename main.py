@@ -1,123 +1,102 @@
 import network
-import random
+import urandom as random
 import usocket as socket
-
-#Importing all the libraries that are needed
-
-s = socket.socket()
-ap = network.WLAN(network.AP_IF)
-#Initializing the AP(Access Point) and the socket
-
-bars = "-" * 31 #Bars, mostly for better appearance
-congratulations_msg = bars + "\nCongratulations but my website is the most secure thing that you probably across,\n so highly unlikely that you will get past my ultimate secure login page :)\n"
-#Congratulations message, a part of the web challenge
-
-forbidden_user_agents = ["Firefox", "Curl", "firefox", "curl","Redmi", "redmi"]
+#Libraries needed for the challenge
 
 
+#------Variables-------
+s=socket.socket()
+ap=network.WLAN(network.AP_IF)#Initializing the ESP as an Access Point (AP)
 
-#<----Not developed yet---->
+bars="-"*30
+congrats_msg="\nCongratulations,brotha but my website is the most secure thing! Good luck"
+forbidden_user_agents=["Firefox","Curl","firefox","curl","redmi","Redmi"]
+ap_name="Try to crack me ;)"
 
-def html():
-    website = """<html>
-    <title>Testing 123</title>
-    <p>This is a test</p>
-    <p>Parameter test</p>
-    <p>{bars}</p>
-    <h1>Second parameter</h1>
-    <p>{congratulations_msg}</p>
-    <b></b>
-    </html>""".format(bars=bars, congratulations_msg=congratulations_msg)
+#Website that will be shown if the user-agent filter gets bypassed
+def default_website():
+    website="""<html>
+    <title>Hello User</title>
+    <p><b1>Hello mate</b1></p>
+    <p>Parameter_test: {bars}</p>
+    </html>""".format(bars=bars)
     return website
 
-#Function that returns a really simple website
-
-def forbiden_site():
-    html = """<html>
+#Website that will be shown if the user agent filter isn't bypassed
+def forbidden_site():
+    website="""<html>
     <title> A different website ;)</title>
     <p>It seems that you are using a forbidden User-Agent</p>
     <p>It is not allowed!</p>
     <p>{bars}
     Testing parameters and sh..
     </html>""".format(bars=bars)
-    return html
-#Same function as above, different cause its part of the challenge
+    return website
 
-def create_pass():
-    password = ""
-    nums = 9
-    for i in range(3):#Get 3 digits from x, and append them to password
-        x = random.getrandbits(nums)#.getrandbits is used cause the random module doesn't have .randint(), or .choice()
-        password += str(x)
-    print("\n{ + } Password Generated! { + }")
-    print(bars)
+#Function generating and returing a password of numbers with a length of 8
+def password_generator():
+    password=""
+    for i in range(0,8):
+        password+=str(random.getrandbits(9))[0]
+    print("\n{ + } Password Generated! { + }\n"+bars)
     return password
-#Function that creates and returns the password
 
-#Function that thakes a name/password parameter and uses them to create an AP with these credentials
-def create_AP(name, passwd):
+#Function initializing the AP, essid is the name of the AP,
+#password is password and authmode is the security protocol
+#that will be used
+def ap_generator(name,password):
     ap.active(1)
-    ap.config(essid=name, password=passwd, authmode=3)#essid is the name, password is the password, and authmode is the security Protocol that's used for the AP, 2 is WPA
-    print("\n{ + } Network Created! { + }")
-    print(bars)
+    ap.config(essid=name,password=password, authmode=3)
+    print("{ + } Network Created! { + }\n"+bars)
 
-#Function that checks the user agent of a request
-def check_agent(request):
-    request = str(request)
+#Function checking each request, acting as a user-agent filter
+def user_agent_filter(req):
     for i in forbidden_user_agents:
-        if i in request:
-            return 1
-        else:
-            return 0
+        if str(i) in str(req):return 1
+        else: return 0
 
-#Socket function, acts as a listener when a request is made at port 80 and returns the website, along with printing the response for troubleshooting
+#Sockets Function
+#Binds to the IP of the ESP and port 80
+#Acts as a web server, accordingly with the user-agent filter
 def sockets():
-    ip = ap.ifconfig()[0]#ap.ifconfig returns a list of stats from the current network so that we don't have to guess and change the IP everytime
-    s.bind((ip, 80))#Bind to the IP and listen to port 80
+    ip=ap.ifconfig()[0]
+    s.bind((ip,80))
     s.listen(5)
     while True:
-        c, addr = s.accept()
-        print("Got a connection from: {addr}".format(addr=str(addr)))
-        req = c.recv(1024)
-        req = str(req)
-        check = check_agent(req)
-        if check == 1:
-            resp = str(forbiden_site())
+        c,addr=s.accept()
+        print(f"Connection recieved: {addr}")
+        r=str(c.recv(1024))
+        check=user_agent_filter(r)
+        if check:
+            resp=forbidden_site()
             c.send(resp)
             c.close()
         else:
-            resp = str(html())
+            resp=default_website()
             c.send(resp)
             c.close()
 
-#Main function that starts everything
+#Hint function, providing the IP/Length of the password
+#And the first 4 digits of it, just for the sake of smaller wordlists
+#when cracking
+def hint_func(password):
+    password=str(password)
+    x=len(password)
+    l=4
+    a=(x-l)*"*"
+    y=""
+    for i in range(0,4): y+=password[i]
+    ip=ap.ifconfig()[0]
+    return y+a,l,ip
+#main function
+# Self-explanatory :/
 def main():
-    password = str(create_pass())
-    create_AP("Try to crack me ;)", str(123456789)) #<-- Change the password after debugging to password
-    print("\n{ + } Let the Cracking Begin! { + }")
-    print(bars)
-    hint = hints(password)
-    pass_len = hint[1]
-    digits = hint[0]
-    ip = hint[2]
-    print("Hints: \nFirst 4 Digits: {digits}\nLength: {length}".format(digits=digits,length=pass_len))
-    print("Password: {password}".format(password=password))
-    print("IP: {ip}".format(ip=ip))
+    password=password_generator()
+    ap_generator(ap_name,password)
+    print("{ + } Challenge Started, Good Luck! { + }\n"+bars)
+    hints=hint_func(password)
+    first_digits,pass_len,ip=hints[0],hints[1],hints[2]
+    print(f"Hints:\nFirst 4 Digits: {first_digits}\nLength:{pass_len}\nPassword: {password}\nIP: {ip}")
     sockets()
 
-#Hints function, takes the password and returns the first 4 digits, the rest are turned into asterisks
-def hints(passwd):
-    x = passwd
-    length = len(x)
-    length_y = 4
-    asterisks = (length - length_y) * "*"
-    y = ""
-    for i in range(0, 4):
-        y += x[i]
-    ip = ap.ifconfig()[0]
-    return y + asterisks, length, ip
-
-
 main()
-
-
